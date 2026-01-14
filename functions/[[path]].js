@@ -1,32 +1,26 @@
 export async function onRequest(context) {
   const { searchParams } = new URL(context.request.url);
-  
-  /* Menangkap data dari link yang dibuat bookmarklet */
-  const targetUrl = searchParams.get('u') || 'https://google.com';
-  const title = searchParams.get('t') || 'Loading...';
-  const image = searchParams.get('i') || '';
+  const u = searchParams.get('u'); // URL Tujuan
+  const t = searchParams.get('t'); // Judul
+  const i = searchParams.get('i'); // Gambar
 
-  /* HTML Khusus untuk Bot Facebook agar muncul Preview */
-  const html = `<!DOCTYPE html>
-  <html>
-  <head>
-    <meta charset="utf-8">
-    <title>${title}</title>
-    <meta property="og:type" content="article">
-    <meta property="og:title" content="${title}">
-    <meta property="og:description" content="Klik untuk melihat selengkapnya...">
-    <meta property="og:image" content="${image}">
-    <meta property="og:url" content="${targetUrl}">
-    
-    <meta http-equiv="refresh" content="0;url=${targetUrl}">
-    <script>window.location.replace("${targetUrl}");</script>
-  </head>
-  <body>
-    Redirecting to <a href="${targetUrl}">${targetUrl}</a>...
-  </body>
-  </html>`;
+  const ua = context.request.headers.get('user-agent') || '';
+  const isBot = /facebookexternalhit|WhatsApp|Twitterbot|Pinterest|Googlebot|TelegramBot/i.test(ua);
 
-  return new Response(html, {
-    headers: { "content-type": "text/html;charset=UTF-8" },
-  });
+  if (u && isBot) {
+    return new Response(
+      `<!DOCTYPE html><html><head>
+      <title>${t}</title>
+      <meta property="og:title" content="${t}">
+      <meta property="og:image" content="${i}">
+      <meta property="og:type" content="website">
+      <meta name="twitter:card" content="summary_large_image">
+      </head></html>`,
+      { headers: { "content-type": "text/html" } }
+    );
+  } else if (u) {
+    return Response.redirect(u, 302);
+  }
+
+  return new Response("Service Active. Use Bookmarklet to generate links.");
 }
