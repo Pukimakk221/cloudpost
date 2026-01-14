@@ -1,13 +1,12 @@
 export async function onRequest(context) {
   const { searchParams } = new URL(context.request.url);
   
-  // Mengambil data dari URL yang dibuat bookmarklet
+  /* Menangkap data dari link yang dibuat bookmarklet */
   const targetUrl = searchParams.get('u') || 'https://google.com';
   const title = searchParams.get('t') || 'Loading...';
   const image = searchParams.get('i') || '';
-  const fakeDomain = searchParams.get('f') || ''; // Ini parameter fake domain
 
-  // HTML yang dikirim khusus untuk Bot Facebook/Crawler
+  /* HTML Khusus untuk Bot Facebook agar muncul Preview */
   const html = `<!DOCTYPE html>
   <html>
   <head>
@@ -15,11 +14,9 @@ export async function onRequest(context) {
     <title>${title}</title>
     <meta property="og:type" content="article">
     <meta property="og:title" content="${title}">
-    <meta property="og:description" content="Click to view more...">
+    <meta property="og:description" content="Klik untuk melihat selengkapnya...">
     <meta property="og:image" content="${image}">
     <meta property="og:url" content="${targetUrl}">
-    
-    ${fakeDomain ? `<meta property="og:site_name" content="${fakeDomain}">` : ''}
     
     <meta http-equiv="refresh" content="0;url=${targetUrl}">
     <script>window.location.replace("${targetUrl}");</script>
